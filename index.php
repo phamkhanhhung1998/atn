@@ -1,4 +1,4 @@
-<?php // index.php - trang giao diện chính (responsive + no jump on scroll) ?>
+<?php // index.php - trang giao diện chính (responsive + no jump on scroll + sakura falling fixed) ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -8,7 +8,7 @@
   <style>
     :root{
       --bg1:#fff7f9; --bg2:#eef6ff; --accent:#ff4d6d; --accent2:#5b8cff; --ink:#222; --muted:#5b5b5b; --card:#ffffffcc; --shadow:0 10px 30px rgba(0,0,0,.08);
-      --vh: 1vh; /* sẽ được cập nhật bằng JS để chống jump trên mobile */
+      --vh: 1vh;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --safe-left: env(safe-area-inset-left, 0px);
@@ -27,10 +27,9 @@
       overflow-x:hidden;
     }
 
-    /* Container chống "trôi" nhờ dùng 100dvh + --vh fallback */
     .container{
-      min-height:100dvh; /* trình duyệt hiện đại */
-      min-height:calc(var(--vh,1vh)*100); /* fallback + fix iOS address bar */
+      min-height:100dvh;
+      min-height:calc(var(--vh,1vh)*100);
       display:grid; place-items:center;
       padding:32px;
       padding-top:calc(32px + var(--safe-top));
@@ -47,7 +46,7 @@
       backdrop-filter:blur(10px);
       border:1px solid rgba(255,255,255,.6);
       position:relative; overflow:hidden;
-      margin:auto; /* luôn giữa */
+      margin:auto;
     }
 
     .ribbon{position:absolute; inset:auto -10% -10% auto; width:220px; height:220px; transform:rotate(25deg);
@@ -58,11 +57,11 @@
       background:rgba(255,255,255,.75); box-shadow:var(--shadow); border:1px solid rgba(0,0,0,.05); font-size:14px; color:#444}
 
     .hero{display:flex; flex-direction:column; align-items:center; gap:16px; padding:24px 24px 12px}
-    .avatar{width:140px; height:140px; border-radius:16px; overflow:hidden; border:4px solid #fff; box-shadow:var(--shadow); display:grid; place-items:center; color:#999; font-weight:600; background:#fff}
+    .avatar{width:140px; height:140px; border-radius:16px; overflow:hidden; border:4px solid #fff; box-shadow:var(--shadow); display:grid; place-items:center; background:#fff}
     .avatar img{width:100%; height:100%; object-fit:cover; display:block}
-    .title{font-size:clamp(28px,4vw,44px); line-height:1.1; margin:0; letter-spacing:.2px}
+    .title{font-size:clamp(28px,4vw,44px); line-height:1.1; margin:0;}
     .subtitle{margin:6px 0 0; color:var(--muted)}
-    .korean{font-size:clamp(16px,2.2vw,22px); color:#333; opacity:.9}
+    .korean{font-size:clamp(16px,2.2vw,22px); color:#333}
 
     .actions{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; padding:20px}
     .btn{padding:12px 18px; border-radius:12px; border:0; cursor:pointer; font-weight:600; font-size:15px; box-shadow:var(--shadow); transition:.2s transform,.2s box-shadow; touch-action:manipulation}
@@ -77,12 +76,23 @@
     .cardlet p{margin:0; color:var(--muted); font-size:14px}
     footer{padding:14px 24px 28px; text-align:center; color:#666; font-size:13px}
 
-    /* rơi cánh hoa */
-    .petal{position:fixed; top:-10vh; width:16px; height:14px; background:radial-gradient(40% 50% at 40% 50%, #ffd0db, #ff9ab3 60%, #ff6f90);
-      border-radius:70% 30% 70% 30% / 70% 30% 70% 30%; filter:drop-shadow(0 6px 6px rgba(255,0,76,.15)); opacity:.8; pointer-events:none; z-index:0}
-    @keyframes fall{0%{transform:translateY(-10vh) translateX(0) rotate(0)}100%{transform:translateY(110vh) translateX(var(--dx,0)) rotate(360deg)}}
+    /* 🌸 Sakura rơi – chỉ khi KHÔNG starry; nổi trên card (z-index:2) nhưng dưới pháo */
+    .petal{
+      position:fixed; top:-10vh; width:16px; height:14px;
+      background:radial-gradient(40% 50% at 40% 50%, #ffd0db, #ff9ab3 60%, #ff6f90);
+      border-radius:70% 30% 70% 30% / 70% 30% 70% 30%;
+      filter:drop-shadow(0 6px 6px rgba(255,0,76,.15));
+      opacity:.95; pointer-events:none; z-index:2;
+      will-change: transform;
+    }
+    @keyframes fall{
+      0%  {transform:translateY(-10vh) translateX(0) rotate(0deg)}
+      50% {transform:translateY(50vh) translateX(calc(var(--dx,0) * .5)) rotate(180deg)}
+      100%{transform:translateY(110vh) translateX(var(--dx,0)) rotate(360deg)}
+    }
 
-    #confetti{position:fixed; inset:0; pointer-events:none}
+    /* 🎉 Confetti trên cùng */
+    #confetti{position:fixed; inset:0; pointer-events:none; z-index:3}
 
     dialog{border:0; border-radius:16px; padding:0; box-shadow:var(--shadow); max-width:min(680px,92vw)}
     .modal{background:#fff; border-radius:16px; overflow:hidden}
@@ -102,7 +112,7 @@
     .thanks-list{margin-top:14px; display:grid; gap:10px}
     .thank-item{background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:12px; padding:12px}
 
-    /* ⭐ Starry mode – nền tối + chữ sáng, tương phản cao */
+    /* ⭐ Starry mode – nền tối, chữ sáng, tương phản cao */
     body.starry{
       color:#f6f9ff;
       background:
@@ -118,7 +128,6 @@
     body.starry .thanks input, body.starry .thanks textarea{ background:rgba(255,255,255,.12); color:#ffffff; border-color:rgba(255,255,255,.28) }
     body.starry .thanks input::placeholder, body.starry .thanks textarea::placeholder{color:#dbe4ff}
     body.starry .ribbon{opacity:0}
-    /* Lời cảm ơn tương phản cao khi bầu trời đêm */
     body.starry .thank-item{
       background:rgba(255,255,255,.12);
       border:1px solid rgba(255,255,255,.28);
@@ -126,7 +135,7 @@
       text-shadow:0 1px 2px rgba(0,0,0,.55);
     }
 
-    /* Lớp sao nền */
+    /* Sao nền */
     .stars{position:fixed; inset:0; pointer-events:none; z-index:0}
     .star{position:absolute; width:2px; height:2px; background:#fff; border-radius:50%;
       opacity:.95; animation:twinkle 1.8s ease-in-out infinite alternate; box-shadow:0 0 8px rgba(255,255,255,.8)}
@@ -142,7 +151,7 @@
       width:160px; height:2px; background:linear-gradient(90deg, rgba(255,255,255,.85), rgba(120,180,255,.6), rgba(0,0,0,0)); filter:blur(0.6px); }
     @keyframes shoot{ 0%{ transform:translate3d(0,0,0) rotate(45deg); opacity:0 } 5%{ opacity:1 } 100%{ transform:translate3d(140vw,110vh,0) rotate(45deg); opacity:0 } }
 
-    /* 📱 Responsive tweaks */
+    /* 📱 Responsive */
     @media (max-width: 640px){
       .container{padding:20px; padding-top:calc(16px + var(--safe-top)); padding-bottom:calc(20px + var(--safe-bottom))}
       header{padding:28px 16px 8px}
@@ -154,9 +163,12 @@
       .avatar{width:120px; height:120px}
     }
 
-    /* Người dùng giảm chuyển động */
+    /* 🔇 Reduce Motion: chỉ tắt animation khi KHÔNG forcé */
     @media (prefers-reduced-motion: reduce){
-      .petal, .star, .meteor, .spark{animation: none !important}
+      body:not(.force-motion) .petal,
+      body:not(.force-motion) .star,
+      body:not(.force-motion) .meteor,
+      body:not(.force-motion) .spark { animation: none !important }
     }
   </style>
 </head>
@@ -204,7 +216,7 @@
           <p id="wishPreview">Luôn giữ nụ cười và mơ ước thật lớn nhé!</p>
         </div>
         <div class="cardlet">
-          <h3> Biểu tượng</h3>
+          <h3>Biểu tượng</h3>
           <p id="symbolText">Sakura rơi là chương mới bắt đầu.</p>
         </div>
       </section>
@@ -255,31 +267,44 @@
   </dialog>
 
   <script>
-    /* ======= Fix 100vh trên mobile để card không "trôi" khi kéo ======= */
-    function setVH(){
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    }
-    setVH();
-    window.addEventListener('resize', setVH);
-    window.addEventListener('orientationchange', setVH);
+    /* ======= Fix 100vh mobile ======= */
+    function setVH(){ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }
+    setVH(); addEventListener('resize', setVH); addEventListener('orientationchange', setVH);
 
-    // ======= Sakura petals =======
-    const petalCount = 18;
-    for (let i=0;i<petalCount;i++){
-      const p=document.createElement('div');
-      p.className='petal';
-      const startX=Math.random()*100;
-      const drift=(Math.random()*160-80)+'px';
-      const duration=9+Math.random()*8;
-      const delay=-Math.random()*duration;
-      p.style.left=startX+'vw';
-      p.style.animation=`fall ${duration}s linear ${delay}s infinite`;
-      p.style.setProperty('--dx',drift);
-      document.body.appendChild(p);
+    /* ======= ÉP cho phép animation kể cả khi Reduce Motion ======= */
+    document.body.classList.add('force-motion');
+
+    /* ======= Sakura petals (chỉ khi KHÔNG starry) ======= */
+    let petals = [];
+    function createPetals(){
+      if (document.body.classList.contains('starry')) return;
+      clearPetals();
+      const petalCount = 24; // thêm chút dày
+      for (let i=0;i<petalCount;i++){
+        const p=document.createElement('div');
+        p.className='petal';
+        const startX = Math.random()*100;
+        const drift  = (Math.random()*160-80)+'px';
+        const duration = 9+Math.random()*8;
+        const delay    = -Math.random()*duration;
+        p.style.left = startX+'vw';
+        p.style.top  = '-10vh';
+        p.style.setProperty('--dx',drift);
+        p.style.animation = `fall ${duration}s linear ${delay}s infinite`;
+        document.body.appendChild(p);
+        petals.push(p);
+      }
+    }
+    function clearPetals(){ petals.forEach(p=>p.remove()); petals = []; }
+
+    // chạy ngay khi DOM sẵn sàng
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', createPetals, {once:true});
+    } else {
+      createPetals();
     }
 
-    // ======= Confetti + SFX =======
+    /* ======= Confetti + SFX ======= */
     const canvas=document.getElementById('confetti');
     const ctx=canvas.getContext('2d');
     let confettiPieces=[];
@@ -290,8 +315,7 @@
       for(let i=0;i<n;i++){
         confettiPieces.push({x:Math.random()*canvas.width,y:-10,w:6+Math.random()*6,h:8+Math.random()*10,vx:-1+Math.random()*2,vy:2+Math.random()*3,r:Math.random()*360,vr:-6+Math.random()*12,color:colors[Math.floor(Math.random()*colors.length)],life:0});
       }
-      burstSpark();
-      playSfx(true); // luôn phát tiếng pháo khi bấm
+      burstSpark(); playSfx(true);
     }
     function burstSpark(){ const s=document.createElement('div'); s.className='spark'; s.style.left='50%'; s.style.top='46%'; document.body.appendChild(s); setTimeout(()=>s.remove(),1400); }
     (function loop(){ ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -305,7 +329,7 @@
       requestAnimationFrame(loop);
     })();
 
-    // ======= Audio controls =======
+    /* ======= Audio ======= */
     const bgm=document.getElementById('bgm');
     const sfx=document.getElementById('sfxConfetti');
     const audioBtn=document.getElementById('btnAudio');
@@ -322,16 +346,10 @@
         audioStatus.textContent='Trình duyệt chặn tự phát nhạc. Hãy nhấn lần nữa nhé.';
       }
     });
-    function renderAudio(){
-      audioIcon.textContent= audioOn?'🔊':'🔈';
-      audioLabel.textContent= audioOn?'Tắt nhạc':'Bật nhạc';
-      audioStatus.textContent= audioOn?'Đang phát nhạc nền':'Đã tắt nhạc nền';
-    }
-    function playSfx(force=false){
-      try{ if(force || audioOn){ sfx.currentTime=0; sfx.play().catch(()=>{}); } }catch(e){}
-    }
+    function renderAudio(){ audioIcon.textContent= audioOn?'🔊':'🔈'; audioLabel.textContent= audioOn?'Tắt nhạc':'Bật nhạc'; audioStatus.textContent= audioOn?'Đang phát nhạc nền':'Đã tắt nhạc nền'; }
+    function playSfx(force=false){ try{ if(force || audioOn){ sfx.currentTime=0; sfx.play().catch(()=>{}); } }catch(e){} }
 
-    // ======= Helpers =======
+    /* ======= Helpers ======= */
     const $=(id)=>document.getElementById(id);
     function toForm(obj){ const fd=new FormData(); Object.entries(obj).forEach(([k,v])=>{ if(v!==undefined && v!==null) fd.append(k,v); }); return fd; }
     function toVNDate(iso){ const d=new Date(iso); const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0'); const yyyy=d.getFullYear(); return `${dd}/${mm}/${yyyy}`; }
@@ -344,12 +362,12 @@
       img.src = url + bust;
     }
 
-    // ======= UI bindings =======
+    /* ======= UI ======= */
     $('btnConfetti').addEventListener('click', ()=>spawnConfetti(180));
     $('btnWish').addEventListener('click', ()=>$('wishModal').showModal());
     $('closeWish').addEventListener('click', ()=>$('wishModal').close());
     $('btnEdit').addEventListener('click', ()=>{
-      $('inpName').value=$('name').textContent.replaceAll('[','').replaceAll(']','');
+      $('inpName').value=$('name').textContent.replaceAll('[','').replaceAll(']');
       const dd=$('date').textContent.includes('[')?'':toISODate($('date').textContent);
       $('inpDate').value=dd;
       $('inpPhoto').value=$('avatar').dataset.src||'';
@@ -381,7 +399,7 @@
       spawnConfetti(100);
     });
 
-    // ======= Starry toggle + Meteor =======
+    /* ======= Starry toggle + Meteor ======= */
     const sakuraBtn = $('btnSakura');
     let starLayer = null, starry = false, meteorTimer = null;
     const symbolDefault = 'Sakura rơi là chương mới bắt đầu.';
@@ -394,9 +412,18 @@
       document.querySelector('.ribbon').style.opacity = starry ? '0' : '0.15';
       const sym = $('symbolText'); if(sym) sym.textContent = starry ? symbolStarry : symbolDefault;
       sakuraBtn.textContent = starry ? '⭐' : '🌸';
-      if(starry){ if(!starLayer){ createStarfield(); } startMeteorShower(); }
-      else{ clearStarfield(); stopMeteorShower(); }
+
+      if(starry){
+        clearPetals();             // tắt hoa khi sang sao
+        if(!starLayer){ createStarfield(); }
+        startMeteorShower();
+      }else{
+        clearStarfield();          // bỏ sao
+        stopMeteorShower();
+        createPetals();            // bật lại hoa khi về nền hoa
+      }
     }
+
     function createStarfield(){
       starLayer = document.createElement('div'); starLayer.className = 'stars';
       const area = innerWidth * innerHeight;
@@ -420,7 +447,6 @@
       const m = document.createElement('div'); m.className = 'meteor';
       const startX = -10 - Math.random()*10; const startY = -10 - Math.random()*10;
       m.style.left = startX + 'vw'; m.style.top  = startY + 'vh';
-      const tail = 120 + Math.random()*120; m.style.setProperty('--tail', tail + 'px');
       m.style.animation = `shoot ${2.2 + Math.random()*1.8}s linear forwards`;
       document.body.appendChild(m); m.addEventListener('animationend', ()=> m.remove());
     }
@@ -434,7 +460,7 @@
     }
     function stopMeteorShower(){ if(meteorTimer){ clearTimeout(meteorTimer); meteorTimer = null; } document.querySelectorAll('.meteor').forEach(el=>el.remove()); }
 
-    // ======= Thanks (guestbook) =======
+    /* ======= Thanks (guestbook) ======= */
     async function loadThanks(){
       try{
         const r=await fetch('api/thanks.php'); const j=await r.json();
@@ -458,7 +484,7 @@
       }catch(e){ console.warn(e); }
     });
 
-    // ======= Load initial from backend =======
+    /* ======= Load initial ======= */
     async function loadData(){
       try{
         const r=await fetch('api/get.php'); if(!r.ok) throw 0;
