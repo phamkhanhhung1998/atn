@@ -1,0 +1,50 @@
+:root{ --bg1:#fff7f9; --bg2:#eef6ff; --accent:#ff4d6d; --accent2:#5b8cff; --ink:#222; --muted:#5b5b5b; --card:#ffffffcc; --shadow:0 10px 30px rgba(0,0,0,.08) }
+*{box-sizing:border-box} html,body{height:100%}
+body{
+  margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Noto Sans,"Helvetica Neue",Arial; color:var(--ink);
+  background: radial-gradient(1200px 800px at 10% 0%, var(--bg1), transparent 60%),
+              radial-gradient(1000px 700px at 90% 10%, var(--bg2), transparent 60%),
+              linear-gradient(180deg, #ffffff, #f7fbff); overflow-x:hidden
+}
+.container{min-height:100%; display:grid; place-items:center; padding:32px}
+.card{width:min(960px,92vw); background:var(--card); border-radius:24px; box-shadow:var(--shadow); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.6); position:relative; overflow:hidden}
+.ribbon{position:absolute; inset:auto -10% -10% auto; width:220px; height:220px; transform:rotate(25deg); background:linear-gradient(135deg,var(--accent),var(--accent2)); filter:blur(40px); opacity:.15; pointer-events:none}
+header{padding:48px 32px 16px; text-align:center; position:relative}
+.badge{display:inline-flex; align-items:center; gap:10px; padding:8px 14px; border-radius:999px; background:rgba(255,255,255,.75); box-shadow:var(--shadow); border:1px solid rgba(0,0,0,.05); font-size:14px; color:#444}
+.hero{display:flex; flex-direction:column; align-items:center; gap:20px; padding:24px 24px 12px}
+.avatar{width:140px; height:140px; border-radius:16px; overflow:hidden; border:4px solid #fff; box-shadow:var(--shadow); display:grid; place-items:center; color:#999; font-weight:600; background:#fff}
+.title{font-size:clamp(28px,4vw,44px); line-height:1.1; margin:0; letter-spacing:.2px}
+.subtitle{margin:6px 0 0; color:var(--muted)}
+.korean{font-size:clamp(16px,2.2vw,22px); color:#333; opacity:.9}
+.actions{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; padding:24px}
+.btn{padding:12px 18px; border-radius:12px; border:0; cursor:pointer; font-weight:600; font-size:15px; box-shadow:var(--shadow); transition:.2s transform,.2s box-shadow}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#fff}
+.btn.ghost{background:#fff; color:#333; border:1px solid rgba(0,0,0,.08)}
+.btn:hover{transform:translateY(-1px); box-shadow:0 14px 32px rgba(0,0,0,.12)}
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; padding:0 24px 36px}
+.cardlet{background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:16px; padding:20px; box-shadow:var(--shadow)}
+.cardlet h3{margin:0 0 6px; font-size:18px}
+.cardlet p{margin:0; color:var(--muted); font-size:14px}
+footer{padding:14px 24px 28px; text-align:center; color:#666; font-size:13px}
+
+/* petals + confetti + modal */
+.petal{position:fixed; top:-10vh; width:16px; height:14px; background:radial-gradient(40% 50% at 40% 50%, #ffd0db, #ff9ab3 60%, #ff6f90); border-radius:70% 30% 70% 30% / 70% 30% 70% 30%; filter:drop-shadow(0 6px 6px rgba(255,0,76,.15)); opacity:.8; pointer-events:none; z-index:0}
+@keyframes fall{0%{transform:translateY(-10vh) translateX(0) rotate(0)}100%{transform:translateY(110vh) translateX(var(--dx,0)) rotate(360deg)}}
+#confetti{position:fixed; inset:0; pointer-events:none}
+dialog{border:0; border-radius:16px; padding:0; box-shadow:var(--shadow); max-width:min(680px,92vw)}
+.modal{background:#fff; border-radius:16px; overflow:hidden}
+.modal header{padding:20px 24px; text-align:left; border-bottom:1px solid rgba(0,0,0,.06)}
+.modal .content{padding:20px 24px; color:#444; line-height:1.6}
+.modal footer{padding:16px 24px; border-top:1px solid rgba(0,0,0,.06)}
+.close{padding:10px 14px; border-radius:10px; border:1px solid rgba(0,0,0,.1); background:#fff; cursor:pointer}
+.spark{position:absolute; width:10px; height:10px; background:conic-gradient(from 0deg,var(--accent),var(--accent2)); border-radius:50%; filter:blur(6px); animation:spark 1.4s ease-out forwards}
+@keyframes spark{to{transform:scale(18); opacity:0}}
+.audioStatus{font-size:13px; color:#555}
+
+/* thanks / guestbook */
+.thanks{padding:0 24px 32px}
+.thanks form{display:grid; gap:10px; grid-template-columns:1fr auto}
+.thanks input,.thanks textarea{width:100%; padding:10px; border:1px solid #ddd; border-radius:10px}
+.thanks button{padding:10px 14px; border-radius:10px; border:0; background:#111; color:#fff; cursor:pointer}
+.thanks-list{margin-top:14px; display:grid; gap:10px}
+.thank-item{background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:12px; padding:12px}

@@ -1,0 +1,5 @@
+# Ngăn thực thi PHP/CGI trong thư mục uploads
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8
+Options -ExecCGI
+AddType text/plain .php .phtml .php3 .php4 .php5 .php7 .php8
